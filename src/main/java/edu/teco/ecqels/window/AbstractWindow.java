@@ -5,7 +5,6 @@
  */
 package edu.teco.ecqels.window;
 
-import com.espertech.esper.client.EPStatement;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.DatasetFactory;
 import com.hp.hpl.jena.sparql.algebra.op.OpBGP;
@@ -15,19 +14,13 @@ import com.hp.hpl.jena.sparql.core.DatasetGraph;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.engine.ExecutionContext;
 import com.hp.hpl.jena.sparql.engine.QueryIterator;
-import com.hp.hpl.jena.sparql.engine.iterator.QueryIter;
 import com.hp.hpl.jena.sparql.engine.iterator.QueryIterRoot;
-import com.hp.hpl.jena.sparql.engine.main.QC;
-import com.hp.hpl.jena.tdb.solver.OpExecutorTDB;
 import edu.teco.ecqels.Engine;
 import edu.teco.ecqels.event.DataChangedEvent;
 import edu.teco.ecqels.event.DataChangedListener;
+import edu.teco.ecqels.op.CachedOpExecutor;
 import javax.swing.event.EventListenerList;
 import org.apache.logging.log4j.LogManager;
-import edu.teco.ecqels.data.EnQuad;
-import edu.teco.ecqels.op.CachedOpExecutor;
-import edu.teco.ecqels.query.execution.QueryExecutor;
-import edu.teco.ecqels.query.iterator.QueryIteratorCopy;
 
 /**
  *
@@ -43,7 +36,6 @@ public abstract class AbstractWindow implements Window {
     protected final Engine engine;
     protected EventListenerList listeners = new EventListenerList();
     protected boolean stop = false;
-    private EPStatement statement;
     protected OpGraph op;
 
     public AbstractWindow(Engine engine, Node streamNode, BasicPattern pattern) {
@@ -51,7 +43,6 @@ public abstract class AbstractWindow implements Window {
         this.streamNode = streamNode;
         this.pattern = pattern;
         this.datasetGraph = DatasetFactory.createMemFixed().asDatasetGraph();
-        //registerWithEsper();
     }
 
     public QueryIterator evaluate() {
@@ -84,7 +75,7 @@ public abstract class AbstractWindow implements Window {
         return pattern;
     }
 
-//    private void registerWithEsper() {        
+//    private void registerWithEsper() {
 //        statement = engine.addWindow(streamNode, getEsperWindow());//".win:length(1)");
 //        statement.setSubscriber(new Object() {
 //            public void update(EnQuad enQuad) {
@@ -92,11 +83,9 @@ public abstract class AbstractWindow implements Window {
 //            }
 //        });
 //    }
-
 //    protected String getEsperWindow() {
 //        return ".win:length(1)";
 //    }
-
     public void add(final Quad quad) {
         if (stop) {
             return;

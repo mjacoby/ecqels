@@ -5,7 +5,6 @@
  */
 package edu.teco.ecqels.stream;
 
-import com.espertech.esper.client.EPStatement;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.query.ResultSetFactory;
@@ -57,7 +56,6 @@ public class StreamExecutor {
     private Engine engine;
     private ExecutionContext executionContext;
     private List<OpStream> ops;
-    private List<EPStatement> statements = new ArrayList<>();
     private EventListenerList listeners = new EventListenerList();
     private final QueryExecutionContext queryContext;
     private final RefreshManager refreshManager;
@@ -226,11 +224,6 @@ public class StreamExecutor {
     }
 
     public void stop() {
-        for (EPStatement statement : statements) {
-            statement.setSubscriber(null);
-            statement.stop();
-            statement.destroy();
-        }
         streams.forEach(s -> s.getWindow().stop());
     }
 
